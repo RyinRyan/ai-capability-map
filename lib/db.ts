@@ -104,6 +104,7 @@ export function initDb() {
       territory_id TEXT NOT NULL,
       name TEXT NOT NULL,
       status TEXT NOT NULL,
+      link TEXT,
       sort_order INTEGER DEFAULT 0,
       FOREIGN KEY (territory_id) REFERENCES territories(id) ON DELETE CASCADE
     );
@@ -116,6 +117,15 @@ export function initDb() {
     // Set existing users to not first login (preserve existing behavior)
     db.exec('UPDATE users SET is_first_login = 0');
   }
+
+  // Add link column to facilities table if not exists
+  if (!columnExists(db, 'facilities', 'link')) {
+    console.log('[DB] Adding link column to facilities table...');
+    db.exec('ALTER TABLE facilities ADD COLUMN link TEXT');
+  }
+
+  // Note: territories.link column is kept for backward compatibility but no longer used
+  // New data structure stores link in facilities table instead
 
   // Insert default root user if not exists (password: root)
   const rootUser = db.prepare('SELECT * FROM users WHERE username = ?').get('root');
@@ -142,13 +152,13 @@ function insertDefaultData(db: Database.Database) {
   `);
 
   const insertTerritory = db.prepare(`
-    INSERT INTO territories (id, planet_id, name, description, icon, color, markers, link, sort_order)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO territories (id, planet_id, name, description, icon, color, markers, sort_order)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   const insertFacility = db.prepare(`
-    INSERT INTO facilities (territory_id, name, status, sort_order)
-    VALUES (?, ?, ?, ?)
+    INSERT INTO facilities (territory_id, name, status, link, sort_order)
+    VALUES (?, ?, ?, ?, ?)
   `);
 
   // Insert R&D planets
@@ -177,12 +187,11 @@ function insertDefaultData(db: Database.Database) {
         territory.icon,
         territory.color,
         JSON.stringify(territory.markers),
-        territory.link || null,
         tIndex
       );
 
       territory.facilities.forEach((facility, fIndex) => {
-        insertFacility.run(territory.id, facility.name, facility.status, fIndex);
+        insertFacility.run(territory.id, facility.name, facility.status, facility.link || null, fIndex);
       });
     });
   });
@@ -213,12 +222,11 @@ function insertDefaultData(db: Database.Database) {
         territory.icon,
         territory.color,
         JSON.stringify(territory.markers),
-        territory.link || null,
         tIndex
       );
 
       territory.facilities.forEach((facility, fIndex) => {
-        insertFacility.run(territory.id, facility.name, facility.status, fIndex);
+        insertFacility.run(territory.id, facility.name, facility.status, facility.link || null, fIndex);
       });
     });
   });
@@ -276,10 +284,10 @@ export function getPlanets(galaxy: GalaxyType): Planet[] {
           icon: territory.icon,
           color: territory.color,
           markers: JSON.parse(territory.markers),
-          link: territory.link,
           facilities: facilities.map(f => ({
             name: f.name,
-            status: f.status
+            status: f.status,
+            link: f.link
           }))
         };
       })
@@ -292,8 +300,8 @@ export function addTerritory(planetId: string, territory: Omit<Territory, 'id'>)
   const id = `${planetId}-${Date.now()}`;
   
   db.prepare(`
-    INSERT INTO territories (id, planet_id, name, description, icon, color, markers, link, sort_order)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO territories (id, planet_id, name, description, icon, color, markers, sort_order)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     id,
     planetId,
@@ -302,16 +310,15 @@ export function addTerritory(planetId: string, territory: Omit<Territory, 'id'>)
     territory.icon,
     territory.color,
     JSON.stringify(territory.markers),
-    territory.link || null,
     999
   );
 
   // Insert facilities
   territory.facilities.forEach((facility, index) => {
     db.prepare(`
-      INSERT INTO facilities (territory_id, name, status, sort_order)
-      VALUES (?, ?, ?, ?)
-    `).run(id, facility.name, facility.status, index);
+      INSERT INTO facilities (territory_id, name, status, link, sort_order)
+      VALUES (?, ?, ?, ?, ?)
+    `).run(id, facility.name, facility.status, facility.link || null, index);
   });
 
   return { ...territory, id };
@@ -335,18 +342,15 @@ export function updateTerritory(territoryId: string, updates: Partial<Territory>
   if (updates.markers !== undefined) {
     db.prepare('UPDATE territories SET markers = ? WHERE id = ?').run(JSON.stringify(updates.markers), territoryId);
   }
-  if (updates.link !== undefined) {
-    db.prepare('UPDATE territories SET link = ? WHERE id = ?').run(updates.link, territoryId);
-  }
 
   // Update facilities if provided
   if (updates.facilities !== undefined) {
     db.prepare('DELETE FROM facilities WHERE territory_id = ?').run(territoryId);
     updates.facilities.forEach((facility, index) => {
       db.prepare(`
-        INSERT INTO facilities (territory_id, name, status, sort_order)
-        VALUES (?, ?, ?, ?)
-      `).run(territoryId, facility.name, facility.status, index);
+        INSERT INTO facilities (territory_id, name, status, link, sort_order)
+        VALUES (?, ?, ?, ?, ?)
+      `).run(territoryId, facility.name, facility.status, facility.link || null, index);
     });
   }
 }

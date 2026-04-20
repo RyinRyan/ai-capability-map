@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, MapPin } from 'lucide-react';
+import { X, Plus, Trash2, MapPin, ExternalLink } from 'lucide-react';
 import { Territory, Facility } from '../types';
 import * as Icons from 'lucide-react';
 
@@ -15,7 +15,7 @@ interface ConfigModalProps {
 }
 
 const AVAILABLE_ICONS = [
-  'Rocket', 'Brain', 'PuzzlePiece', 'Star', 'Settings', 
+  'Rocket', 'Brain', 'Puzzle', 'Star', 'Settings', 
   'Shield', 'Network', 'FlaskConical', 'ClipboardCheck',
   'Palette', 'Box', 'Microscope', 'Infinity', 'Zap'
 ];
@@ -27,17 +27,30 @@ const AVAILABLE_COLORS = [
 
 export default function ConfigModal({ isOpen, onClose, territory, onSave, onDelete }: ConfigModalProps) {
   const [formData, setFormData] = useState<Omit<Territory, 'id'>>({
-    name: territory?.name || '',
-    description: territory?.description || '',
-    icon: territory?.icon || 'Rocket',
-    color: territory?.color || '#4fc3f7',
-    markers: territory?.markers || [],
-    facilities: territory?.facilities || [],
-    link: territory?.link || ''
+    name: '',
+    description: '',
+    icon: 'Rocket',
+    color: '#4fc3f7',
+    markers: [],
+    facilities: []
   });
 
   const [newMarker, setNewMarker] = useState('');
-  const [newFacility, setNewFacility] = useState({ name: '', status: 'online' as Facility['status'] });
+  const [newFacility, setNewFacility] = useState({ name: '', status: 'online' as Facility['status'], link: '' });
+
+  // Reset form data when territory prop changes or modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        name: territory?.name || '',
+        description: territory?.description || '',
+        icon: territory?.icon || 'Rocket',
+        color: territory?.color || '#4fc3f7',
+        markers: territory?.markers || [],
+        facilities: territory?.facilities || []
+      });
+    }
+  }, [isOpen, territory]);
 
   const handleAddMarker = () => {
     if (newMarker.trim()) {
@@ -60,9 +73,9 @@ export default function ConfigModal({ isOpen, onClose, territory, onSave, onDele
     if (newFacility.name.trim()) {
       setFormData(prev => ({
         ...prev,
-        facilities: [...prev.facilities, { ...newFacility }]
+        facilities: [...prev.facilities, { name: newFacility.name, status: newFacility.status }]
       }));
-      setNewFacility({ name: '', status: 'online' });
+      setNewFacility({ name: '', status: 'online', link: '' });
     }
   };
 
@@ -104,7 +117,7 @@ export default function ConfigModal({ isOpen, onClose, territory, onSave, onDele
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold" style={{ color: '#4fc3f7', fontFamily: 'var(--font-exo-2)' }}>
-                {territory ? '编辑子能力' : '新增子能力'}
+                {territory ? '编辑能力国度' : '新增能力国度'}
               </h2>
               <button
                 onClick={onClose}
@@ -123,7 +136,7 @@ export default function ConfigModal({ isOpen, onClose, territory, onSave, onDele
                   value={formData.name}
                   onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
                   className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-[#4fc3f7] focus:outline-none transition-colors"
-                  placeholder="输入子能力名称"
+                  placeholder="输入能力国度名称"
                   required
                 />
               </div>
@@ -184,18 +197,6 @@ export default function ConfigModal({ isOpen, onClose, territory, onSave, onDele
                 </div>
               </div>
 
-              {/* Link */}
-              <div>
-                <label className="block text-sm text-white/60 mb-2">跳转链接</label>
-                <input
-                  type="url"
-                  value={formData.link}
-                  onChange={e => setFormData(prev => ({ ...prev, link: e.target.value }))}
-                  className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-[#4fc3f7] focus:outline-none transition-colors"
-                  placeholder="https://..."
-                />
-              </div>
-
               {/* Markers */}
               <div>
                 <label className="block text-sm text-white/60 mb-2">标签</label>
@@ -239,56 +240,99 @@ export default function ConfigModal({ isOpen, onClose, territory, onSave, onDele
 
               {/* Facilities */}
               <div>
-                <label className="block text-sm text-white/60 mb-2">设施项目</label>
-                <div className="flex gap-2 mb-2">
+                <label className="block text-sm text-white/60 mb-2">能力地标</label>
+                <div className="space-y-2 mb-4">
                   <input
                     type="text"
                     value={newFacility.name}
                     onChange={e => setNewFacility(prev => ({ ...prev, name: e.target.value }))}
-                    className="flex-1 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-[#4fc3f7] focus:outline-none transition-colors"
-                    placeholder="设施名称"
+                    className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-[#4fc3f7] focus:outline-none transition-colors"
+                    placeholder="能力地标名称"
                   />
-                  <select
-                    value={newFacility.status}
-                    onChange={e => setNewFacility(prev => ({ ...prev, status: e.target.value as Facility['status'] }))}
-                    className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-[#4fc3f7] focus:outline-none transition-colors"
-                  >
-                    <option value="online">已上线</option>
-                    <option value="dev">开发中</option>
-                    <option value="plan">待规划</option>
-                  </select>
-                  <button
-                    type="button"
-                    onClick={handleAddFacility}
-                    className="px-4 py-2 rounded-lg bg-[#4fc3f7]/20 border border-[#4fc3f7]/50 text-[#4fc3f7] hover:bg-[#4fc3f7]/30 transition-colors"
-                  >
-                    <Plus size={20} />
-                  </button>
+                  <input
+                    type="url"
+                    value={newFacility.link}
+                    onChange={e => setNewFacility(prev => ({ ...prev, link: e.target.value }))}
+                    className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-[#4fc3f7] focus:outline-none transition-colors"
+                    placeholder="跳转链接 (https://...)"
+                  />
+                  <div className="flex gap-2">
+                    <select
+                      value={newFacility.status}
+                      onChange={e => setNewFacility(prev => ({ ...prev, status: e.target.value as Facility['status'] }))}
+                      className="flex-1 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-[#4fc3f7] focus:outline-none transition-colors"
+                    >
+                      <option value="online">已上线</option>
+                      <option value="dev">开发中</option>
+                      <option value="plan">待规划</option>
+                    </select>
+                    <button
+                      type="button"
+                      onClick={handleAddFacility}
+                      className="px-4 py-2 rounded-lg bg-[#4fc3f7]/20 border border-[#4fc3f7]/50 text-[#4fc3f7] hover:bg-[#4fc3f7]/30 transition-colors"
+                    >
+                      <Plus size={20} />
+                    </button>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   {formData.facilities.map((facility, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between px-4 py-2 rounded-lg bg-white/5"
+                      className="px-4 py-3 rounded-lg bg-white/5"
                     >
-                      <span className="text-white">{facility.name}</span>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className="px-2 py-1 rounded text-xs"
-                          style={{
-                            background: facility.status === 'online' ? '#69f0ae20' : facility.status === 'dev' ? '#ffab4020' : '#ffffff10',
-                            color: facility.status === 'online' ? '#69f0ae' : facility.status === 'dev' ? '#ffab40' : '#ffffff80'
+                      {/* 第一行：名称和状态 */}
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-white font-medium">{facility.name}</span>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="px-2 py-1 rounded text-xs"
+                            style={{
+                              background: facility.status === 'online' ? '#69f0ae20' : facility.status === 'dev' ? '#ffab4020' : '#ffffff10',
+                              color: facility.status === 'online' ? '#69f0ae' : facility.status === 'dev' ? '#ffab40' : '#ffffff80'
+                            }}
+                          >
+                            {facility.status === 'online' ? '已上线' : facility.status === 'dev' ? '开发中' : '待规划'}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveFacility(index)}
+                            className="p-1 hover:bg-white/10 rounded transition-colors"
+                          >
+                            <Trash2 size={14} className="text-red-400" />
+                          </button>
+                        </div>
+                      </div>
+                      {/* 第二行：URL 显示和编辑 */}
+                      <div className="flex items-center gap-2 text-sm">
+                        <ExternalLink size={14} className={facility.link ? "text-[#4fc3f7]" : "text-white/30"} />
+                        <input
+                          type="text"
+                          value={facility.link || ''}
+                          onChange={e => {
+                            const newLink = e.target.value;
+                            setFormData(prev => ({
+                              ...prev,
+                              facilities: prev.facilities.map((f, i) => 
+                                i === index ? { ...f, link: newLink || undefined } : f
+                              )
+                            }));
                           }}
-                        >
-                          {facility.status === 'online' ? '已上线' : facility.status === 'dev' ? '开发中' : '待规划'}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveFacility(index)}
-                          className="p-1 hover:bg-white/10 rounded transition-colors"
-                        >
-                          <Trash2 size={14} className="text-red-400" />
-                        </button>
+                          className="flex-1 px-2 py-1 rounded bg-white/5 border border-white/10 text-white/70 text-xs focus:border-[#4fc3f7] focus:outline-none transition-colors"
+                          placeholder="输入跳转链接 (https://...)"
+                        />
+                        {facility.link && (
+                          <a
+                            href={facility.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[#4fc3f7] hover:text-[#4fc3f7]/80 transition-colors"
+                            onClick={e => e.stopPropagation()}
+                            title="打开链接"
+                          >
+                            <ExternalLink size={14} />
+                          </a>
+                        )}
                       </div>
                     </div>
                   ))}

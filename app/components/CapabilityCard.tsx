@@ -3,14 +3,14 @@
 import { motion } from 'framer-motion';
 import { Territory, Facility } from '../types';
 import * as Icons from 'lucide-react';
-import { LucideIcon, Check, RefreshCw, Hourglass } from 'lucide-react';
+import { LucideIcon, Check, RefreshCw, Hourglass, ExternalLink } from 'lucide-react';
 
-interface TerritoryCardProps {
+interface CapabilityCardProps {
   territory: Territory;
   index: number;
 }
 
-function FacilityItem({ facility }: { facility: Facility }) {
+function LandmarkItem({ facility, color }: { facility: Facility; color: string }) {
   const getStatusConfig = (status: Facility['status']) => {
     switch (status) {
       case 'online':
@@ -43,13 +43,21 @@ function FacilityItem({ facility }: { facility: Facility }) {
 
   const config = getStatusConfig(facility.status);
   const StatusIcon = config.icon;
+  const hasLink = !!facility.link;
+
+  const handleClick = () => {
+    if (facility.link) {
+      window.open(facility.link, '_blank', 'noopener,noreferrer');
+    }
+  };
 
   return (
     <div 
-      className="facility-item flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200"
+      onClick={handleClick}
+      className={`facility-item flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 ${hasLink ? 'cursor-pointer hover:bg-[#4fc3f7]/10 hover:border-[#4fc3f7]/30' : ''}`}
       style={{
         background: 'rgba(65, 90, 119, 0.3)',
-        border: '1px solid rgba(79, 195, 247, 0.1)'
+        border: hasLink ? `1px solid ${color}30` : '1px solid rgba(79, 195, 247, 0.1)'
       }}
     >
       <div className="flex items-center gap-3">
@@ -58,6 +66,9 @@ function FacilityItem({ facility }: { facility: Facility }) {
           style={{ background: config.dotColor }}
         />
         <span className="text-sm">{facility.name}</span>
+        {hasLink && (
+          <ExternalLink size={14} style={{ color: color, opacity: 0.8 }} />
+        )}
       </div>
       <span 
         className={`px-2 py-1 rounded text-xs font-medium flex items-center gap-1 ${config.bgClass} ${config.textClass}`}
@@ -69,21 +80,33 @@ function FacilityItem({ facility }: { facility: Facility }) {
   );
 }
 
-export default function TerritoryCard({ territory, index }: TerritoryCardProps) {
+export default function CapabilityCard({ territory, index }: CapabilityCardProps) {
   const IconComponent = (Icons[territory.icon as keyof typeof Icons] as LucideIcon) || Icons.Circle;
 
+  const CardWrapper = ({ children }: { children: React.ReactNode }) => {
+    const className = "territory-card p-6 rounded-2xl relative overflow-hidden group block";
+    const style = {
+      background: 'rgba(27, 38, 59, 0.6)',
+      border: '1px solid rgba(79, 195, 247, 0.15)',
+      transition: 'all 0.3s ease',
+      textDecoration: 'none'
+    };
+    
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.1 }}
+        className={className}
+        style={style}
+      >
+        {children}
+      </motion.div>
+    );
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
-      className="territory-card p-6 rounded-2xl relative overflow-hidden group"
-      style={{
-        background: 'rgba(27, 38, 59, 0.6)',
-        border: '1px solid rgba(79, 195, 247, 0.15)',
-        transition: 'all 0.3s ease'
-      }}
-    >
+    <CardWrapper>
       {/* Top border accent */}
       <div 
         className="absolute top-0 left-0 right-0 h-[3px]"
@@ -92,10 +115,11 @@ export default function TerritoryCard({ territory, index }: TerritoryCardProps) 
 
       {/* Pulse wave effect */}
       <div 
-        className="pulse-wave absolute inset-0 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100"
+        className="pulse-wave absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100"
         style={{ 
           color: territory.color,
-          animation: 'pulseWave 2s ease-out infinite'
+          animation: 'pulseWave 2s ease-out infinite',
+          pointerEvents: 'none'
         }}
       />
 
@@ -114,24 +138,20 @@ export default function TerritoryCard({ territory, index }: TerritoryCardProps) 
         <div className="flex-1">
           {/* Header */}
           <div className="flex items-center gap-3 mb-3">
-            <h4 
-              className="font-bold text-lg"
-              style={{ 
-                color: territory.color,
-                fontFamily: 'var(--font-exo-2)'
-              }}
-            >
-              {territory.name}
-            </h4>
-            <div 
-              className="px-2 py-1 rounded text-xs opacity-60 border"
-              style={{ 
-                borderColor: territory.color, 
-                color: territory.color 
-              }}
-            >
-              TERRITORY {index + 1}
+            <div className="flex items-center gap-2">
+              <span className="text-xs opacity-50 tracking-wider">能力国度</span>
+              <h4 
+                className="font-bold text-lg"
+                style={{ 
+                  color: territory.color,
+                  fontFamily: 'var(--font-exo-2)'
+                }}
+              >
+                {territory.name}
+              </h4>
             </div>
+
+
           </div>
 
           {/* Description */}
@@ -158,26 +178,14 @@ export default function TerritoryCard({ territory, index }: TerritoryCardProps) 
           {territory.facilities && territory.facilities.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {territory.facilities.map((facility, idx) => (
-                <FacilityItem key={idx} facility={facility} />
+                <LandmarkItem key={idx} facility={facility} color={territory.color} />
               ))}
             </div>
           )}
 
-          {/* Link */}
-          {territory.link && (
-            <a
-              href={territory.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 mt-4 text-sm hover:underline"
-              style={{ color: territory.color }}
-            >
-              <Icons.ExternalLink size={14} />
-              访问链接
-            </a>
-          )}
+
         </div>
       </div>
-    </motion.div>
+    </CardWrapper>
   );
 }

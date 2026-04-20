@@ -136,11 +136,9 @@ export default function Home() {
                   fontFamily: 'var(--font-exo-2)'
                 }}
               >
-                AI R&D CAPABILITY MAP
+                公开AI辅助研发能力地图
               </h1>
-              <p className="text-sm tracking-widest opacity-60">
-                EXPLORATION TERMINAL v2.4
-              </p>
+
             </div>
           </div>
 

@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Planet } from '../types';
 import { X } from 'lucide-react';
-import TerritoryCard from './TerritoryCard';
+import CapabilityCard from './CapabilityCard';
 import * as Icons from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 
@@ -86,6 +86,9 @@ export default function ExplorePanel({ planet, isOpen, onClose }: ExplorePanelPr
 
                     {/* Title */}
                     <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs opacity-50 tracking-wider">能力星球</span>
+                      </div>
                       <h2 
                         className="text-2xl font-bold"
                         style={{ 
@@ -95,9 +98,6 @@ export default function ExplorePanel({ planet, isOpen, onClose }: ExplorePanelPr
                       >
                         {planet.name}
                       </h2>
-                      <p className="text-sm opacity-50 tracking-widest">
-                        EXPLORATION ZONE // {planet.id}
-                      </p>
                     </div>
                   </div>
 
@@ -118,7 +118,7 @@ export default function ExplorePanel({ planet, isOpen, onClose }: ExplorePanelPr
               >
                 <div className="space-y-6">
                   {planet.territories.map((territory, tIdx) => (
-                    <TerritoryCard 
+                    <CapabilityCard 
                       key={territory.id} 
                       territory={territory} 
                       index={tIdx}

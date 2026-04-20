@@ -142,7 +142,7 @@ export default function ConfigPage() {
               className="text-2xl font-bold"
               style={{ color: '#4fc3f7', fontFamily: 'var(--font-exo-2)' }}
             >
-              能力配置管理
+              能力地图配置管理
             </h1>
           </div>
 
@@ -231,7 +231,7 @@ export default function ConfigPage() {
                     <p className="text-sm text-white/50">{planet.description}</p>
                   </div>
                   <div className="text-sm text-white/40">
-                    {planet.territories.length} 个子能力
+                    {planet.territories.length} 个能力国度
                   </div>
                 </div>
 
@@ -317,12 +317,12 @@ export default function ConfigPage() {
                           </button>
                         </div>
 
-                        {/* Link indicator */}
-                        {territory.link && (
+                        {/* Facility link indicator */}
+                        {territory.facilities?.some(f => f.link) && (
                           <div 
                             className="absolute top-2 right-2 w-2 h-2 rounded-full"
                             style={{ background: territory.color }}
-                            title="已配置链接"
+                            title={`${territory.facilities.filter(f => f.link).length} 个能力地标已配置链接`}
                           />
                         )}
                       </div>
@@ -336,7 +336,7 @@ export default function ConfigPage() {
                     style={{ minHeight: '120px' }}
                   >
                     <Plus size={32} />
-                    <span className="text-sm">新增子能力</span>
+                    <span className="text-sm">新增能力国度</span>
                   </button>
                 </div>
               </motion.div>

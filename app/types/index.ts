@@ -2,6 +2,7 @@
 export interface Facility {
   name: string;
   status: 'online' | 'dev' | 'plan';
+  link?: string;
 }
 
 // 二级能力 (Territory)
@@ -13,7 +14,6 @@ export interface Territory {
   color: string;
   markers: string[];
   facilities: Facility[];
-  link?: string;
 }
 
 // 一级能力 (Planet)
