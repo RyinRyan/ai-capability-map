@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getPlanets, initDb, addTerritory, updateTerritory, deleteTerritory, resetToDefault } from '@/lib/db';
+import { getPlanets, initDb, addTerritory, updateTerritory, deleteTerritory } from '@/lib/db';
 import { GalaxyType } from '@/app/types';
 
 // Initialize DB on first request

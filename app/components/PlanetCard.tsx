@@ -1,9 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Planet, GalaxyType } from '../types';
 import * as Icons from 'lucide-react';
-import { LucideIcon } from 'lucide-react';
+import { ChevronRight, LucideIcon } from 'lucide-react';
+import { GalaxyType, Planet } from '../types';
 
 interface PlanetCardProps {
   planet: Planet;
@@ -16,15 +16,20 @@ export default function PlanetCard({ planet, index, currentGalaxy, onClick }: Pl
   const IconComponent = (Icons[planet.icon as keyof typeof Icons] as LucideIcon) || Icons.Circle;
 
   return (
-    <motion.div
+    <motion.button
+      type="button"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1, duration: 0.5 }}
-      className="planet flex flex-col items-center cursor-pointer"
+      transition={{ delay: index * 0.08, duration: 0.45 }}
+      className="planet group flex w-full flex-col items-center rounded-[32px] border px-5 py-7 text-center transition focus:outline-none focus:ring-2 focus:ring-[#4fc3f7] focus:ring-offset-0"
+      style={{
+        background: 'linear-gradient(180deg, rgba(17, 27, 44, 0.82), rgba(14, 22, 36, 0.82))',
+        borderColor: 'rgba(148, 163, 184, 0.16)',
+      }}
       onClick={onClick}
+      aria-label={`查看 ${planet.name} 的能力详情`}
     >
-      <div className="relative mb-4">
-        {/* Planet Core */}
+      <div className="relative mb-5">
         <div
           className="planet-core rounded-full flex items-center justify-center relative overflow-hidden transition-all duration-400"
           style={{
@@ -32,65 +37,55 @@ export default function PlanetCard({ planet, index, currentGalaxy, onClick }: Pl
             height: `${planet.size}px`,
             background: planet.gradient,
             color: planet.color,
-            boxShadow: currentGalaxy === 'rd' 
-              ? '0 0 20px #4fc3f7' 
-              : '0 0 20px #ab47bc'
+            boxShadow: currentGalaxy === 'rd' ? '0 0 22px rgba(79, 195, 247, 0.35)' : '0 0 22px rgba(171, 71, 188, 0.35)',
           }}
         >
-          <IconComponent 
-            size={planet.size * 0.25} 
-            style={{ color: planet.iconColor }}
-          />
-          {/* Rotating gradient overlay */}
-          <div 
+          <IconComponent size={planet.size * 0.25} style={{ color: planet.iconColor }} />
+          <div
             className="absolute inset-0 rounded-full"
             style={{
-              background: 'conic-gradient(from 0deg, transparent, rgba(255,255,255,0.1), transparent)',
-              animation: 'planetRotate 20s linear infinite'
+              background: 'conic-gradient(from 0deg, transparent, rgba(255,255,255,0.12), transparent)',
+              animation: 'planetRotate 20s linear infinite',
             }}
           />
         </div>
 
-        {/* Planet Ring */}
         <div
           className="planet-ring absolute border-2 border-dashed rounded-full opacity-40"
           style={{
-            width: `${planet.size * 1.4}px`,
-            height: `${planet.size * 1.4}px`,
-            top: `${-planet.size * 0.2}px`,
-            left: `${-planet.size * 0.2}px`,
+            width: `${planet.size * 1.38}px`,
+            height: `${planet.size * 1.38}px`,
+            top: `${-planet.size * 0.19}px`,
+            left: `${-planet.size * 0.19}px`,
             borderColor: planet.color,
-            animation: 'ringRotate 30s linear infinite'
+            animation: 'ringRotate 30s linear infinite',
           }}
         />
 
-        {/* Status Badge */}
         <div
-          className="sector-badge absolute -top-2 -right-2 px-3 py-1 rounded-full text-xs font-semibold tracking-wide"
-          style={{ 
-            background: planet.color, 
-            color: planet.textColor 
-          }}
+          className="absolute -right-1 -top-1 rounded-full px-3 py-1 text-xs font-semibold tracking-wide"
+          style={{ background: planet.color, color: planet.textColor }}
         >
           {planet.statusCount}
         </div>
       </div>
 
-      {/* Planet Name */}
-      <h3 
-        className="font-bold text-lg text-center mb-1"
-        style={{ 
+      <h3
+        className="mb-2 text-lg font-bold"
+        style={{
           color: planet.color,
-          fontFamily: 'var(--font-exo-2)'
+          fontFamily: 'var(--font-exo-2)',
         }}
       >
         {planet.name}
       </h3>
 
-      {/* Planet Description */}
-      <p className="text-sm text-center opacity-60 max-w-[150px]">
-        {planet.description}
-      </p>
-    </motion.div>
+      <p className="mb-4 max-w-[210px] text-sm leading-6 text-white/62">{planet.description}</p>
+
+      <div className="inline-flex items-center gap-1 text-sm font-medium text-white/55 transition group-hover:text-white/90">
+        查看详情
+        <ChevronRight size={16} />
+      </div>
+    </motion.button>
   );
 }

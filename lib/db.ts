@@ -2,12 +2,39 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 import { Planet, Territory, GalaxyType } from '../app/types';
-import { rdPlanets, digitalPlanets } from '../app/data/defaultData';
 
 const DATA_DIR = path.join(process.cwd(), 'data');
 const DB_PATH = path.join(DATA_DIR, 'capability-map.db');
 
 let db: Database.Database | null = null;
+
+interface PlanetRow {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  size: number;
+  color: string;
+  icon_color: string;
+  gradient: string;
+  text_color: string;
+  status_count: string;
+}
+
+interface TerritoryRow {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  markers: string;
+}
+
+interface FacilityRow {
+  name: string;
+  status: 'online' | 'dev' | 'plan';
+  link: string | null;
+}
 
 // Ensure data directory exists
 function ensureDataDir(): void {
@@ -134,102 +161,8 @@ export function initDb() {
     db.prepare('INSERT INTO users (username, password, is_first_login) VALUES (?, ?, ?)').run('root', 'root', 1);
   }
 
-  // Check if planets exist, if not insert defaults
-  const planetCount = db.prepare('SELECT COUNT(*) as count FROM planets').get() as { count: number };
-  if (planetCount.count === 0) {
-    console.log('[DB] Inserting default planet data...');
-    insertDefaultData(db);
-  }
-
   console.log('[DB] Database initialization complete.');
   return isNewDatabase;
-}
-
-function insertDefaultData(db: Database.Database) {
-  const insertPlanet = db.prepare(`
-    INSERT INTO planets (id, galaxy, name, description, icon, size, color, icon_color, gradient, text_color, status_count, sort_order)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
-  const insertTerritory = db.prepare(`
-    INSERT INTO territories (id, planet_id, name, description, icon, color, markers, sort_order)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
-  const insertFacility = db.prepare(`
-    INSERT INTO facilities (territory_id, name, status, link, sort_order)
-    VALUES (?, ?, ?, ?, ?)
-  `);
-
-  // Insert R&D planets
-  rdPlanets.forEach((planet, pIndex) => {
-    insertPlanet.run(
-      planet.id,
-      'rd',
-      planet.name,
-      planet.description,
-      planet.icon,
-      planet.size,
-      planet.color,
-      planet.iconColor,
-      planet.gradient,
-      planet.textColor,
-      planet.statusCount,
-      pIndex
-    );
-
-    planet.territories.forEach((territory, tIndex) => {
-      insertTerritory.run(
-        territory.id,
-        planet.id,
-        territory.name,
-        territory.description,
-        territory.icon,
-        territory.color,
-        JSON.stringify(territory.markers),
-        tIndex
-      );
-
-      territory.facilities.forEach((facility, fIndex) => {
-        insertFacility.run(territory.id, facility.name, facility.status, facility.link || null, fIndex);
-      });
-    });
-  });
-
-  // Insert Digital planets
-  digitalPlanets.forEach((planet, pIndex) => {
-    insertPlanet.run(
-      planet.id,
-      'digital',
-      planet.name,
-      planet.description,
-      planet.icon,
-      planet.size,
-      planet.color,
-      planet.iconColor,
-      planet.gradient,
-      planet.textColor,
-      planet.statusCount,
-      pIndex
-    );
-
-    planet.territories.forEach((territory, tIndex) => {
-      insertTerritory.run(
-        territory.id,
-        planet.id,
-        territory.name,
-        territory.description,
-        territory.icon,
-        territory.color,
-        JSON.stringify(territory.markers),
-        tIndex
-      );
-
-      territory.facilities.forEach((facility, fIndex) => {
-        insertFacility.run(territory.id, facility.name, facility.status, facility.link || null, fIndex);
-      });
-    });
-  });
 }
 
 export function verifyUser(username: string, password: string): boolean {
@@ -254,12 +187,12 @@ export function getPlanets(galaxy: GalaxyType): Planet[] {
   
   const planets = db.prepare(`
     SELECT * FROM planets WHERE galaxy = ? ORDER BY sort_order
-  `).all(galaxy) as any[];
+  `).all(galaxy) as PlanetRow[];
 
   return planets.map(planet => {
     const territories = db.prepare(`
       SELECT * FROM territories WHERE planet_id = ? ORDER BY sort_order
-    `).all(planet.id) as any[];
+    `).all(planet.id) as TerritoryRow[];
 
     return {
       id: planet.id,
@@ -275,7 +208,7 @@ export function getPlanets(galaxy: GalaxyType): Planet[] {
       territories: territories.map(territory => {
         const facilities = db.prepare(`
           SELECT * FROM facilities WHERE territory_id = ? ORDER BY sort_order
-        `).all(territory.id) as any[];
+        `).all(territory.id) as FacilityRow[];
 
         return {
           id: territory.id,
@@ -287,7 +220,7 @@ export function getPlanets(galaxy: GalaxyType): Planet[] {
           facilities: facilities.map(f => ({
             name: f.name,
             status: f.status,
-            link: f.link
+            link: f.link || undefined
           }))
         };
       })
@@ -360,10 +293,3 @@ export function deleteTerritory(territoryId: string): void {
   db.prepare('DELETE FROM territories WHERE id = ?').run(territoryId);
 }
 
-export function resetToDefault(): void {
-  const db = getDb();
-  db.prepare('DELETE FROM facilities').run();
-  db.prepare('DELETE FROM territories').run();
-  db.prepare('DELETE FROM planets').run();
-  insertDefaultData(db);
-}
