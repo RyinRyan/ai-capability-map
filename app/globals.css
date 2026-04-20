@@ -1,0 +1,190 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0d1b2a;
+  --foreground: #e0e6ed;
+  --star-blue: #4fc3f7;
+  --star-purple: #ab47bc;
+  --star-gold: #ffd54f;
+  --star-green: #69f0ae;
+  --star-orange: #ffab40;
+  --deep-space: #0d1b2a;
+  --nebula-1: #1b263b;
+  --nebula-2: #415a77;
+  --orbit-line: rgba(79, 195, 247, 0.3);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--deep-space);
+  color: var(--foreground);
+  font-family: 'Raleway', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Planet Animations */
+@keyframes planetRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ringRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Orbit Animations */
+@keyframes orbitDash {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+/* Nebula Animation */
+@keyframes nebulaDrift {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Compass Animation */
+@keyframes compassPulse {
+  0%, 100% {
+    opacity: 1;
+    height: 32px;
+  }
+  50% {
+    opacity: 0.6;
+    height: 36px;
+  }
+}
+
+/* Data Stream Animation */
+@keyframes streamFlow {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* Scan Sweep Animation */
+@keyframes scanSweep {
+  0% {
+    left: -50%;
+  }
+  50% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Pulse Wave Animation */
+@keyframes pulseWave {
+  0% {
+    box-shadow: 0 0 0 0 currentColor;
+  }
+  100% {
+    box-shadow: 0 0 0 20px transparent;
+  }
+}
+
+/* Star Twinkle Animation */
+@keyframes starTwinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.5);
+  }
+}
+
+/* Gateway Button Hover Effect */
+.gateway-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.gateway-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.gateway-btn:hover::before {
+  transform: translateX(100%);
+}
+
+/* Planet Hover Effects */
+.planet:hover .planet-core {
+  transform: scale(1.15);
+  box-shadow: 
+    0 0 30px currentColor,
+    0 0 60px currentColor,
+    inset 0 0 30px rgba(255,255,255,0.1);
+}
+
+/* Territory Card Hover */
+.territory-card:hover {
+  border-color: rgba(79, 195, 247, 0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 40px rgba(79, 195, 247, 0.2);
+}
+
+/* Facility Item Hover */
+.facility-item:hover {
+  background: rgba(65, 90, 119, 0.5);
+  border-color: rgba(79, 195, 247, 0.3);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(13, 27, 42, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(79, 195, 247, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(79, 195, 247, 0.5);
+}
+
+/* Selection Styling */
+::selection {
+  background: rgba(79, 195, 247, 0.3);
+  color: #ffffff;
+}
