@@ -133,7 +133,7 @@ export default function Home() {
                 className="text-3xl font-bold tracking-wide"
                 style={{ 
                   color: '#4fc3f7',
-                  fontFamily: "'Exo 2', sans-serif"
+                  fontFamily: 'var(--font-exo-2)'
                 }}
               >
                 AI R&D CAPABILITY MAP

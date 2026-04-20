@@ -46,7 +46,7 @@ export const rdPlanets: Planet[] = [
         id: 'des-001-3',
         name: 'MCP工具港',
         description: '设计流程AI工具链',
-        icon: 'PuzzlePiece',
+        icon: 'Puzzle',
         color: '#ffd54f',
         markers: ['设计规范', '素材库', '原型工具'],
         facilities: [
@@ -115,7 +115,7 @@ export const rdPlanets: Planet[] = [
         id: 'arch-002-3',
         name: 'MCP工具港',
         description: '软件设计流程工具链',
-        icon: 'PuzzlePiece',
+        icon: 'Puzzle',
         color: '#ffd54f',
         markers: ['UML集成', '文档生成', '评审工具'],
         facilities: [
@@ -183,7 +183,7 @@ export const rdPlanets: Planet[] = [
         id: 'ar-003-3',
         name: 'MCP工具港',
         description: 'AR开发工具链',
-        icon: 'PuzzlePiece',
+        icon: 'Puzzle',
         color: '#ffd54f',
         markers: ['ARKit/ARCore', 'Unity集成', '调试工具'],
         facilities: [
@@ -252,7 +252,7 @@ export const rdPlanets: Planet[] = [
         id: 'dev-test-004-3',
         name: 'MCP工具港',
         description: '测试开发工具链',
-        icon: 'PuzzlePiece',
+        icon: 'Puzzle',
         color: '#ffd54f',
         markers: ['Jest/Mocha', '测试框架', 'CI集成'],
         facilities: [
@@ -321,7 +321,7 @@ export const rdPlanets: Planet[] = [
         id: 'code-chk-005-3',
         name: 'MCP工具港',
         description: '代码检查工具链',
-        icon: 'PuzzlePiece',
+        icon: 'Puzzle',
         color: '#ffd54f',
         markers: ['ESLint/SonarQube', 'Git集成', 'CI检查'],
         facilities: [
@@ -390,7 +390,7 @@ export const rdPlanets: Planet[] = [
         id: 'test-006-3',
         name: 'MCP工具港',
         description: '测试流程工具链',
-        icon: 'PuzzlePiece',
+        icon: 'Puzzle',
         color: '#ffd54f',
         markers: ['Selenium/Appium', 'CI集成', '测试管理'],
         facilities: [
@@ -461,7 +461,7 @@ export const digitalPlanets: Planet[] = [
         id: 'cie-007-3',
         name: 'MCP工具港',
         description: 'CI/CD工具链',
-        icon: 'PuzzlePiece',
+        icon: 'Puzzle',
         color: '#ffd54f',
         markers: ['Jenkins集成', '容器化', '云平台'],
         facilities: [
@@ -530,7 +530,7 @@ export const digitalPlanets: Planet[] = [
         id: 'sre-008-3',
         name: 'MCP工具港',
         description: '运维工具链',
-        icon: 'PuzzlePiece',
+        icon: 'Puzzle',
         color: '#ffd54f',
         markers: ['Prometheus', 'Grafana', 'Ansible'],
         facilities: [
@@ -599,7 +599,7 @@ export const digitalPlanets: Planet[] = [
         id: 'te-009-3',
         name: 'MCP工具港',
         description: '测试工具链',
-        icon: 'PuzzlePiece',
+        icon: 'Puzzle',
         color: '#ffd54f',
         markers: ['JIRA集成', '测试框架', '数据管理'],
         facilities: [
@@ -668,7 +668,7 @@ export const digitalPlanets: Planet[] = [
         id: 'sec-010-3',
         name: 'MCP工具港',
         description: '安全工具链',
-        icon: 'PuzzlePiece',
+        icon: 'Puzzle',
         color: '#ffd54f',
         markers: ['SonarQube', '安全框架', '审计工具'],
         facilities: [

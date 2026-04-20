@@ -90,7 +90,7 @@ export default function ExplorePanel({ planet, isOpen, onClose }: ExplorePanelPr
                         className="text-2xl font-bold"
                         style={{ 
                           color: planet.color,
-                          fontFamily: "'Exo 2', sans-serif"
+                          fontFamily: 'var(--font-exo-2)'
                         }}
                       >
                         {planet.name}

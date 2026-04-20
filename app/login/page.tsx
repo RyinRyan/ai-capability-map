@@ -155,7 +155,7 @@ export default function LoginPage() {
                 className="text-2xl font-bold mb-2"
                 style={{ 
                   color: '#4fc3f7',
-                  fontFamily: "'Exo 2', sans-serif"
+                  fontFamily: 'var(--font-exo-2)'
                 }}
               >
                 管理员登录
@@ -282,7 +282,7 @@ export default function LoginPage() {
                 <div>
                   <h2 
                     className="text-xl font-bold"
-                    style={{ color: '#ffab40', fontFamily: "'Exo 2', sans-serif" }}
+                    style={{ color: '#ffab40', fontFamily: 'var(--font-exo-2)' }}
                   >
                     首次登录
                   </h2>

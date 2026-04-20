@@ -21,10 +21,16 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* System font stack for offline usage */
+:root {
+  --font-exo-2: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-raleway: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
 body {
   background: var(--deep-space);
   color: var(--foreground);
-  font-family: 'Raleway', sans-serif;
+  font-family: var(--font-raleway);
   overflow-x: hidden;
 }
 

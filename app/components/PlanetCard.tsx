@@ -81,7 +81,7 @@ export default function PlanetCard({ planet, index, currentGalaxy, onClick }: Pl
         className="font-bold text-lg text-center mb-1"
         style={{ 
           color: planet.color,
-          fontFamily: "'Exo 2', sans-serif"
+          fontFamily: 'var(--font-exo-2)'
         }}
       >
         {planet.name}

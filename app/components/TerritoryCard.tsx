@@ -118,7 +118,7 @@ export default function TerritoryCard({ territory, index }: TerritoryCardProps) 
               className="font-bold text-lg"
               style={{ 
                 color: territory.color,
-                fontFamily: "'Exo 2', sans-serif"
+                fontFamily: 'var(--font-exo-2)'
               }}
             >
               {territory.name}

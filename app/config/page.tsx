@@ -140,7 +140,7 @@ export default function ConfigPage() {
             </Link>
             <h1 
               className="text-2xl font-bold"
-              style={{ color: '#4fc3f7', fontFamily: "'Exo 2', sans-serif" }}
+              style={{ color: '#4fc3f7', fontFamily: 'var(--font-exo-2)' }}
             >
               能力配置管理
             </h1>

@@ -103,7 +103,7 @@ export default function ConfigModal({ isOpen, onClose, territory, onSave, onDele
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold" style={{ color: '#4fc3f7', fontFamily: "'Exo 2', sans-serif" }}>
+              <h2 className="text-xl font-bold" style={{ color: '#4fc3f7', fontFamily: 'var(--font-exo-2)' }}>
                 {territory ? '编辑子能力' : '新增子能力'}
               </h2>
               <button
